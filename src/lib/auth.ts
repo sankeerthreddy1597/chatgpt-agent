@@ -7,13 +7,18 @@ export const auth = betterAuth({
         provider: "postgresql",
     }),
     socialProviders: {
-        // github: {
-        //     clientId: '',
-        //     clientSecret: ''
-        // },
+        github: {
+            clientId: String(process.env.GITHUB_CLIENT_ID),
+            clientSecret: String(process.env.GITHUB_CLIENT_SECRET)
+        },
         google: {
             clientId: String(process.env.GOOGLE_CLIENT_ID),
             clientSecret: String(process.env.GOOGLE_CLIENT_SECRET)
+        }
+    },
+    account: {
+        accountLinking: {
+            enabled: false
         }
     }
 });
