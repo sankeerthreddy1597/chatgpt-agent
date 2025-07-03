@@ -18,10 +18,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { SidebarTrigger, useSidebar } from "./ui/sidebar";
 
 export function Navbar() {
   const { data: session } = useSession();
   const router = useRouter();
+  const { state } = useSidebar();
 
   async function handleClick() {
     await signOut({
@@ -34,18 +36,20 @@ export function Navbar() {
   }
 
   return (
-    <header className="border-b px-4 py-2 flex items-center justify-between bg-background">
+    <header className="border-b px-4 py-2 flex items-center justify-between bg-background w-full">
       {/* Left: Hamburger + Logo + Model Selector*/}
       <div className="flex items-center space-x-3">
         <Button variant="ghost" size="icon">
-          <Menu className="w-5 h-5 cursor-pointer" />
+          <SidebarTrigger className="w-5 h-5 cursor-pointer" />
         </Button>
-         <div className="flex gap-2 items-center">
-         <Brain className="h-8 w-8 text-green-400" />
-         <span className="text-lg font-semibold tracking-tight hidden md:inline">
-           ChatGPT Agent
-         </span>
-       </div>
+        {state === "collapsed" && (
+          <div className="md:flex gap-2 items-center hidden">
+            <Brain className="h-8 w-8 text-green-400" />
+            <span className="text-lg font-semibold tracking-tight">
+              ChatGPT Agent
+            </span>
+          </div>
+        )}
 
         <Select defaultValue="gemini-flash-2.0">
           <SelectTrigger className="h-8 px-3 py-1 text-sm border-none hover:bg-muted/80 rounded-md shadow-none focus:ring-0 focus:outline-none">

@@ -7,6 +7,10 @@ import Link from "next/link";
 import { useSession, signOut } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 
+import {
+    Sidebar as SideBar
+  } from "@/components/ui/sidebar"
+
 export function Sidebar() {
   //   const { data: session } = useSession();
 
@@ -30,10 +34,11 @@ export function Sidebar() {
   ];
 
   return (
+    <SideBar>
     <aside className="h-screen w-64 flex flex-col bg-muted/60 border-r">
       <div className="flex gap-2 items-center p-4">
         <Brain className="h-8 w-8 text-green-400" />
-        <span className="text-lg font-semibold tracking-tight hidden md:inline">
+        <span className="text-lg font-semibold tracking-tight">
           ChatGPT Agent
         </span>
       </div>
@@ -93,5 +98,6 @@ export function Sidebar() {
         </Button>
       </div>
     </aside>
+    </SideBar>
   );
 }
