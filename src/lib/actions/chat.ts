@@ -68,7 +68,7 @@ export async function getAllChats(userId: string) {
     if (!session || session.user.id !== userId) {
       throw new Error("Unauthorized");
     }
-    
+
     const chats = await db.chat.findMany({
       where: { userId },
       orderBy: { createdAt: "desc" },
@@ -91,6 +91,13 @@ export async function getChatById(chatId: string) {
 
     const chat = await db.chat.findUnique({
       where: { id: chatId },
+      include: {
+        messages: {
+          orderBy: {
+            createdAt: 'asc'
+          }
+        }
+      }
     });
 
     if (!chat || chat.userId !== session.user.id) {
