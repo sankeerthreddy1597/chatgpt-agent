@@ -1,5 +1,7 @@
-export default function Page() {
-    return (
-        <div>Chat Screen</div>
-    )
+import { redirect } from "next/navigation";
+
+export default function ChatRootRedirect() {
+    if(false) {
+        redirect("/");
+    }
 }
