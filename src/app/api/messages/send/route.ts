@@ -1,11 +1,22 @@
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { googleAi } from "@/lib/ai";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 export const dynamic = "force-dynamic"; // For edge streaming
 
 export async function POST(req: NextRequest) {
-  const { chatId, userMessage } = await req.json();
+    const session = await auth.api.getSession({ headers: await headers() });
+
+    if (!session) {
+      return new NextResponse(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+      });
+    }
+  
+    const body = await req.json();
+    const { chatId, userMessage } = body;
 
   // Save user message to DB
   await prisma.message.create({

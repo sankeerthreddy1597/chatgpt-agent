@@ -2,7 +2,14 @@
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import { Brain, LogOut, Search, Settings, SquarePen } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
+
+import { Brain, LogOut, Search, Settings, SquarePen, Ellipsis, Pencil, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { signOut } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
@@ -110,18 +117,49 @@ export function Sidebar() {
               : chats?.map((chat) => {
                   const isActive = pathname === `/chat/${chat.id}`;
                   return (
-                    <Link
-                      href={`/chat/${chat.id}`}
+                    <div
                       key={chat.id}
                       className={cn(
-                        "block text-sm px-3 py-2 rounded-md transition",
+                        "group/chat flex items-center justify-between px-3 py-2 rounded-md text-sm transition",
                         isActive
                           ? "bg-muted-foreground/20 text-foreground font-medium"
                           : "hover:bg-muted-foreground/20"
                       )}
                     >
-                      {chat.title}
-                    </Link>
+                      <Link
+                        href={`/chat/${chat.id}`}
+                        className="flex-1 truncate"
+                      >
+                        {chat.title}
+                      </Link>
+                
+                      {/* Show only on individual chat hover */}
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button
+                            className="opacity-0 group-hover/chat:opacity-100 data-[state=open]:opacity-100 p-1 rounded-md transition cursor-pointer"
+                          >
+                            <Ellipsis className="w-4 h-4" />
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent side="bottom" className="w-32">
+                          <DropdownMenuItem
+                            // onClick={() => handleRenameChat(chat.id, chat.title)}
+                            className="cursor-pointer"
+                          >
+                             <Pencil className="w-4 h-4 text-gray-800"/>
+                             Rename
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            // onClick={() => handleDeleteChat(chat.id)}
+                            className="text-red-500 focus:text-red-500 cursor-pointer"
+                          >
+                            <Trash2 className="w-4 h-4 text-red-500 focus:text-red-500"/>
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
                   );
                 })}
           </div>
