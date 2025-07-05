@@ -3,6 +3,7 @@ import { getChatById } from '@/lib/actions/chat';
 import ChatPage from '@/components/ChatPage';
 import { redirect } from 'next/navigation';
 
+
 interface PageProps {
   params: {
     id: string;
@@ -37,7 +38,7 @@ interface Message {
 }
 
 export default async function ChatPageRoute({ params }: PageProps) {
-  const { id } = params;
+  const { id } = await params;
 
   try {
     // Fetch chat data from your database
@@ -65,7 +66,7 @@ export default async function ChatPageRoute({ params }: PageProps) {
 
 // Optional: Add metadata for SEO
 export async function generateMetadata({ params }: PageProps) {
-  const { id } = params;
+  const { id } = await params;
   
   try {
     const chat = await getChatById(id) as DatabaseChat;

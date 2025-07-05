@@ -1,15 +1,8 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import {
-  Bot,
-  Copy,
-  ThumbsUp,
-  ThumbsDown,
-  Plus,
-  ArrowUp,
-} from "lucide-react";
-import ReactMarkdown from 'react-markdown'
+import { Bot, Copy, ThumbsUp, ThumbsDown, Plus, ArrowUp, Volume2 } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 
 // Types
 interface Message {
@@ -54,39 +47,62 @@ const ChatPage: React.FC<ChatPageProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputMessage.trim() || isLoading) return;
-
+  
     const userMessage: Message = {
       id: Date.now().toString(),
       content: inputMessage,
       role: "user",
       timestamp: new Date(),
     };
-
-    setMessages((prev) => [...prev, userMessage]);
+  
+    const assistantId = (Date.now() + 1).toString();
+    const assistantMessage: Message = {
+      id: assistantId,
+      content: "",
+      role: "assistant",
+      timestamp: new Date(),
+    };
+  
+    setMessages((prev) => [...prev, userMessage, assistantMessage]);
     setInputMessage("");
     setIsLoading(true);
-
+  
     try {
-      // TODO: Replace with your actual API call
-      // const response = await sendMessage(chatId, inputMessage);
-
-      // Simulate API response for now
-      setTimeout(() => {
-        const assistantMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          content:
-            "I'm a *placeholder* **response**. **Replace** this with your *actual* API call to send the message and get the response.",
-          role: "assistant",
-          timestamp: new Date(),
-        };
-        setMessages((prev) => [...prev, assistantMessage]);
-        setIsLoading(false);
-      }, 1000);
+      const res = await fetch("/api/messages/send", {
+        method: "POST",
+        body: JSON.stringify({ chatId, userMessage: inputMessage }),
+      });
+  
+      if (!res.body) throw new Error("No response body");
+  
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+  
+      let chunkText = "";
+  
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+  
+        const text = decoder.decode(value);
+        chunkText += text;
+  
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === assistantId
+              ? { ...msg, content: msg.content + text }
+              : msg
+          )
+        );
+      }
+  
+      setIsLoading(false);
     } catch (error) {
-      console.error("Error sending message:", error);
+      console.error("Streaming failed", error);
       setIsLoading(false);
     }
   };
+  
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -199,30 +215,38 @@ const ChatPage: React.FC<ChatPageProps> = ({
                         <div className="prose prose-sm max-w-none">
                           <p className="whitespace-pre-wrap text-gray-800 leading-relaxed">
                             {message.role === "user" && message.content}
-                            {message.role === "assistant" && <ReactMarkdown>{message.content}</ReactMarkdown>}
+                            {message.role === "assistant" && (
+                              <ReactMarkdown>{message.content}</ReactMarkdown>
+                            )}
                           </p>
                         </div>
 
-                        {message.role === "assistant" && (
+                        {message.role === "assistant" && message.content && (
                           <div className="flex items-center space-x-2 mt-3">
                             <button
                               onClick={() => copyToClipboard(message.content)}
-                              className="p-1 rounded hover:bg-gray-100 transition-colors"
+                              className="p-1 rounded hover:bg-gray-200 transition-colors cursor-pointer"
                               title="Copy message"
                             >
                               <Copy className="w-4 h-4 text-gray-500" />
                             </button>
                             <button
-                              className="p-1 rounded hover:bg-gray-100 transition-colors"
+                              className="p-1 rounded hover:bg-gray-200 transition-colors cursor-pointer"
                               title="Good response"
                             >
                               <ThumbsUp className="w-4 h-4 text-gray-500" />
                             </button>
                             <button
-                              className="p-1 rounded hover:bg-gray-100 transition-colors"
+                              className="p-1 rounded hover:bg-gray-200 transition-colors cursor-pointer"
                               title="Bad response"
                             >
                               <ThumbsDown className="w-4 h-4 text-gray-500" />
+                            </button>
+                            <button
+                              className="p-1 rounded hover:bg-gray-200 transition-colors cursor-pointer"
+                              title="Read aloud"
+                            >
+                              <Volume2 className="w-4 h-4 text-gray-500" />
                             </button>
                             <span className="text-xs text-gray-400 ml-2">
                               {formatTimestamp(message.timestamp)}
@@ -231,7 +255,6 @@ const ChatPage: React.FC<ChatPageProps> = ({
                         )}
                       </div>
                     </div>
-
                   </div>
                 </div>
               ))}

@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@google/genai": "^1.8.0",
     "@prisma/client": "^6.11.0",
     "@prisma/extension-accelerate": "^2.0.1",
     "@radix-ui/react-avatar": "^1.1.10",
