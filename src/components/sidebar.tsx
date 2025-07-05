@@ -9,7 +9,16 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 
-import { Brain, LogOut, Search, Settings, SquarePen, Ellipsis, Pencil, Trash2 } from "lucide-react";
+import {
+  Brain,
+  LogOut,
+  Search,
+  Settings,
+  SquarePen,
+  Ellipsis,
+  Pencil,
+  Trash2,
+} from "lucide-react";
 import Link from "next/link";
 import { signOut } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
@@ -20,12 +29,13 @@ import { useEffect, useState } from "react";
 import { Skeleton } from "./ui/skeleton";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { Input } from "./ui/input";
 
 export function Sidebar() {
-  const [chats, setChats] = useState<{ id: string; title: string }[] | null>(
-    null
-  );
+  const [chats, setChats] = useState<{ id: string; title: string }[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editingChatId, setEditingChatId] = useState<string | null>(null);
+  const [newTitle, setNewTitle] = useState("");
   const pathname = usePathname();
 
   const fetchChats = async () => {
@@ -116,6 +126,38 @@ export function Sidebar() {
                 ))
               : chats?.map((chat) => {
                   const isActive = pathname === `/chat/${chat.id}`;
+
+                  const handleRenameClick = (
+                    chatId: string,
+                    currentTitle: string
+                  ) => {
+                    setEditingChatId(chatId);
+                    setNewTitle(currentTitle);
+                  };
+
+                  const handleRenameSave = async (chatId: string) => {
+                    try {
+                      if (newTitle.trim() === "") return;
+                      await fetch(`/api/chats/${chatId}`, {
+                        method: "PUT",
+                        body: JSON.stringify({ title: newTitle }),
+                        headers: { "Content-Type": "application/json" },
+                      });
+
+                      setChats((prev) => {
+                        return prev?.map((chat) =>
+                          chat.id === chatId
+                            ? { ...chat, title: newTitle }
+                            : chat
+                        );
+                      });
+                    } catch (err) {
+                      console.error("Rename failed", err);
+                    } finally {
+                      setEditingChatId(null);
+                    }
+                  };
+
                   return (
                     <div
                       key={chat.id}
@@ -126,35 +168,51 @@ export function Sidebar() {
                           : "hover:bg-muted-foreground/20"
                       )}
                     >
-                      <Link
-                        href={`/chat/${chat.id}`}
-                        className="flex-1 truncate"
-                      >
-                        {chat.title}
-                      </Link>
-                
+                      {editingChatId === chat.id ? (
+                        <Input
+                          autoFocus
+                          value={newTitle}
+                          onChange={(e) => setNewTitle(e.target.value)}
+                          onBlur={() => handleRenameSave(chat.id)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              handleRenameSave(chat.id);
+                            }
+                          }}
+                          className="h-8 text-sm px-2 bg-white"
+                        />
+                      ) : (
+                        <Link
+                          href={`/chat/${chat.id}`}
+                          className="flex-1 truncate"
+                        >
+                          {chat.title}
+                        </Link>
+                      )}
+
                       {/* Show only on individual chat hover */}
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <button
-                            className="opacity-0 group-hover/chat:opacity-100 data-[state=open]:opacity-100 p-1 rounded-md transition cursor-pointer"
-                          >
+                          <button className="opacity-0 group-hover/chat:opacity-100 data-[state=open]:opacity-100 p-1 rounded-md transition cursor-pointer">
                             <Ellipsis className="w-4 h-4" />
                           </button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent side="bottom" className="w-32">
                           <DropdownMenuItem
-                            // onClick={() => handleRenameChat(chat.id, chat.title)}
+                            onClick={() =>
+                              handleRenameClick(chat.id, chat.title)
+                            }
                             className="cursor-pointer"
                           >
-                             <Pencil className="w-4 h-4 text-gray-800"/>
-                             Rename
+                            <Pencil className="w-4 h-4 text-gray-800" />
+                            Rename
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             // onClick={() => handleDeleteChat(chat.id)}
                             className="text-red-500 focus:text-red-500 cursor-pointer"
                           >
-                            <Trash2 className="w-4 h-4 text-red-500 focus:text-red-500"/>
+                            <Trash2 className="w-4 h-4 text-red-500 focus:text-red-500" />
                             Delete
                           </DropdownMenuItem>
                         </DropdownMenuContent>
