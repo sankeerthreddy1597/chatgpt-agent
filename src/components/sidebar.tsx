@@ -87,7 +87,7 @@ export function Sidebar() {
 
   return (
     <SideBar>
-      <aside className="h-screen w-64 flex flex-col bg-muted/60 border-r">
+      <aside className="h-screen md:w-64 flex flex-col bg-muted/60 border-r">
         <div className="flex gap-2 items-center p-4">
           <Brain className="h-8 w-8 text-green-400" />
           <span className="text-lg font-semibold tracking-tight">
@@ -194,7 +194,7 @@ export function Sidebar() {
                       {/* Show only on individual chat hover */}
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <button className="opacity-0 group-hover/chat:opacity-100 data-[state=open]:opacity-100 p-1 rounded-md transition cursor-pointer">
+                          <button className="md:opacity-0 opacity-100 group-hover/chat:opacity-100 data-[state=open]:opacity-100 p-1 rounded-md transition cursor-pointer">
                             <Ellipsis className="w-4 h-4" />
                           </button>
                         </DropdownMenuTrigger>

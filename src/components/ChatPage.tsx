@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { Bot, Copy, ThumbsUp, ThumbsDown, Plus, ArrowUp, Volume2 } from "lucide-react";
+import { Bot, Copy, ThumbsUp, ThumbsDown, Plus, ArrowUp, Volume2, Mic, Settings2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 
 // Types
@@ -299,9 +299,24 @@ const ChatPage: React.FC<ChatPageProps> = ({
                 />
                 <button
                   disabled={isLoading}
-                  className="absolute left-4 bottom-4 w-8 h-8 hover:bg-muted-foreground/60 disabled:bg-gray-300 disabled:cursor-not-allowed rounded-full flex items-center justify-center transition-colors cursor-pointer"
+                  className="absolute left-4 bottom-4 w-8 h-8 hover:bg-muted-foreground/20 disabled:bg-gray-300 disabled:cursor-not-allowed rounded-full flex items-center justify-center transition-colors cursor-pointer"
                 >
-                  <Plus className="w-5 h-5 text-gray-800" />
+                  <Plus className="w-5 h-5 text-gray-700" />
+                </button>
+                <button
+                  disabled={isLoading}
+                  className="absolute left-18 bottom-4 w-8 h-8 flex items-center justify-center"
+                >
+                  <div className="flex items-center justify-center gap-x-1 hover:bg-muted-foreground/20 disabled:bg-gray-300 disabled:cursor-not-allowed rounded-full transition-colors cursor-pointer p-2">
+                  <Settings2 className="w-5 h-5 text-gray-700" />
+                  <span className="text-sm">Tools</span>
+                  </div>
+                </button>
+                <button
+                  disabled={isLoading}
+                  className="absolute right-14 bottom-4 w-8 h-8 hover:bg-muted-foreground/20 disabled:bg-gray-300 disabled:cursor-not-allowed rounded-full flex items-center justify-center transition-colors cursor-pointer"
+                >
+                  <Mic className="w-5 h-5 text-gray-700" />
                 </button>
                 <button
                   type="submit"

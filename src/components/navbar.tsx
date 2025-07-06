@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Brain, Menu } from "lucide-react";
+import { Archive, Brain, Ellipsis, Menu, Share, Trash2 } from "lucide-react";
 import { useSession, signOut } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import {
@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { SidebarTrigger, useSidebar } from "./ui/sidebar";
+import { FaGoogle } from "react-icons/fa";
 
 export function Navbar() {
   const { data: session } = useSession();
@@ -56,29 +57,60 @@ export function Navbar() {
             <SelectValue placeholder="Select Model" />
           </SelectTrigger>
           <SelectContent className="w-[150px]">
-            <SelectItem value="gemini-flash-2.0">Gemini Flash 2.0</SelectItem>
-            <SelectItem value="gpt-4">GPT-4</SelectItem>
-            <SelectItem value="llama3">LLaMA 3</SelectItem>
+            <SelectItem value="gemini-flash-2.0">
+              <div className="flex items-center justify-center gap-x-2">
+                <FaGoogle className="h-4 w-4"/>
+                Gemini Flash 2.0
+              </div>
+              </SelectItem>
+            {/* <SelectItem value="gpt-4">GPT-4</SelectItem>
+            <SelectItem value="llama3">LLaMA 3</SelectItem> */}
           </SelectContent>
         </Select>
       </div>
 
-      {/* Right: User Avatar */}
-      <DropdownMenu>
-        <DropdownMenuTrigger>
-          <Avatar className="w-8 h-8">
-            <AvatarImage src={session?.user?.image || ""} />
-            <AvatarFallback>
-              {session?.user?.name?.charAt(0) || "?"}
-            </AvatarFallback>
-          </Avatar>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-max-sm">
-          <DropdownMenuItem disabled>{session?.user?.email}</DropdownMenuItem>
-          <DropdownMenuItem onClick={() => {}}>User Settings</DropdownMenuItem>
-          <DropdownMenuItem onClick={handleClick}>Log out</DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      {/* Right: User Avatar, settings */}
+      <div className="flex gap-x-2">
+        <div className="hidden md:flex items-center justify-center hover:bg-muted-foreground/20 cursor-pointer rounded-full p-2 gap-x-2">
+          <Share className="w-4 h-4"/>
+          <span className="text-sm">Share</span>
+        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger className="hidden md:flex items-center justify-center hover:bg-muted-foreground/20 cursor-pointer rounded p-2">
+            <Ellipsis className="w-4 h-4" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent side="bottom" className="w-32">
+            <DropdownMenuItem className="cursor-pointer">
+              <Archive className="w-4 h-4 text-gray-800" />
+              Archive
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              // onClick={() => handleDeleteChat(chat.id)}
+              className="text-red-500 focus:text-red-500 cursor-pointer"
+            >
+              <Trash2 className="w-4 h-4 text-red-500 focus:text-red-500" />
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <DropdownMenu>
+          <DropdownMenuTrigger className="p-1 rounded-full hover:bg-muted-foreground/20 cursor-pointer">
+            <Avatar className="w-6 h-6">
+              <AvatarImage src={session?.user?.image || ""} />
+              <AvatarFallback>
+                {session?.user?.name?.charAt(0) || "?"}
+              </AvatarFallback>
+            </Avatar>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-max-sm">
+            <DropdownMenuItem disabled>{session?.user?.email}</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => {}}>
+              User Settings
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleClick}>Log out</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     </header>
   );
 }
