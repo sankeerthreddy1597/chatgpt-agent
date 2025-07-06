@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Introduction
+ ChatGPT agent is a clone of openAI's chatgpt site. The goal was to rebuild the basic functionalities of chatting with AI assistant and add additional features with builting function calling and integration with 3rd party services (google drive, github, slack etc).
+
+### Features
+- Built using NextJS, React, Typescript, Tailwind CSS, Chadcn components.
+- Auth built using better auth.
+- Using postgresql with prisma ORM in a neon DB
+- Chats
+  - Create new chats
+  - Update chat title
+  - Delete chat (WIP)
+  - Save messages to DB
+  - Update chat memory for more cost efficient efficient LLM interaction (TODO)
+- LLM
+  - Using google gemini flash 2.0
+  - Use local models via Ollama (TODO)
+ 
+## UI
+<img width="1440" alt="Screenshot 2025-07-05 at 8 24 40 PM" src="https://github.com/user-attachments/assets/9ec59014-1987-45ea-869e-5f3207c50ca7" />
+
+  
 
 ## Getting Started
 
-First, run the development server:
+- set env variables
+```bash
+BETTER_AUTH_SECRET="YOUR_SECRET"
+BETTER_AUTH_URL="http://localhost:3000"
+NEXT_PUBLIC_API_URL="http://localhost:3000"
 
+DATABASE_URL="YOUR_DB_URL"
+
+GOOGLE_CLIENT_ID="YOUR_CLIENT_ID"
+GOOGLE_CLIENT_SECRET="YOUR_CLIENT_SECRET"
+
+GITHUB_CLIENT_ID="YOUR_CLIENT_ID"
+GITHUB_CLIENT_SECRET="YOUR_CLIENT_SECRET"
+
+GOOGLE_GENAI_API_KEY="YOUR_GENAI_API_KEY"
+```
+- run the development server:
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
