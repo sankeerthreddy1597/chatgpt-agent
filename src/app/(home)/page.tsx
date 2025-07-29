@@ -1,6 +1,3 @@
-import { SignOutButton } from "@/components/sign-out-button";
-import { useSession } from "@/lib/auth-client";
-import { Brain, LoaderCircle } from "lucide-react";
 import { redirect } from "next/navigation";
 
 import { auth } from "@/lib/auth"; // path to your Better Auth server instance

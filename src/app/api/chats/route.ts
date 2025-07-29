@@ -15,6 +15,7 @@ export async function GET() {
     const chats = await getAllChats(session.user.id);
     return Response.json(chats);
   } catch (e) {
+    console.log(e);
     return new Response(JSON.stringify({ error: "Something Went Wrong! Please try again." }), { status: 500 });
   }
 }

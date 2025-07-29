@@ -14,9 +14,9 @@ interface PageProps {
 interface DatabaseMessage {
   id: string;
   content: string;
-  role: 'USER' | 'ASSISTANT'; // From your Role enum
+  role: 'USER' | 'ASSISTANT';
   createdAt: Date;
-  metadata?: any;
+  metadata?: unknown;
   chatId: string;
 }
 
@@ -75,6 +75,7 @@ export async function generateMetadata({ params }: PageProps) {
       description: 'AI Chat Conversation',
     };
   } catch (error) {
+    console.log(error);
     return {
       title: 'Chat',
       description: 'AI Chat Conversation',

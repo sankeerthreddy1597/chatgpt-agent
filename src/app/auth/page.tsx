@@ -11,8 +11,9 @@ import {
     CardTitle,
   } from "@/components/ui/card"
 import { Brain } from 'lucide-react';
+import { Suspense } from 'react';
 
-export default function Page() {
+export function Auth() {
     const queryParams = useSearchParams()
  
   const error = queryParams.get('error');
@@ -43,6 +44,14 @@ export default function Page() {
       </CardContent>
     </Card>
     </div>
+  )
+}
+
+export default function Page () {
+  return (
+    <Suspense>
+      <Auth />
+    </Suspense>
   )
 }
 

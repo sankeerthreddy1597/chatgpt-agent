@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Archive, Brain, Ellipsis, Menu, Share, Trash2 } from "lucide-react";
+import { Archive, Brain, Ellipsis, Share, Trash2 } from "lucide-react";
 import { useSession, signOut } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import {
