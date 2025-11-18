@@ -24,6 +24,7 @@ const ChatPage: React.FC<ChatPageProps> = ({
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [loadStateText, setLoadStateText] = useState("Generating response...");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -44,61 +45,126 @@ const ChatPage: React.FC<ChatPageProps> = ({
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   if (!inputMessage.trim() || isLoading) return;
+  
+  //   const userMessage: Message = {
+  //     id: Date.now().toString(),
+  //     content: inputMessage,
+  //     role: "user",
+  //     timestamp: new Date(),
+  //   };
+  
+  //   const assistantId = (Date.now() + 1).toString();
+  //   const assistantMessage: Message = {
+  //     id: assistantId,
+  //     content: "",
+  //     role: "assistant",
+  //     timestamp: new Date(),
+  //   };
+  
+  //   setMessages((prev) => [...prev, userMessage, assistantMessage]);
+  //   setInputMessage("");
+  //   setIsLoading(true);
+  
+  //   try {
+  //     const res = await fetch("/api/messages/send", {
+  //       method: "POST",
+  //       body: JSON.stringify({ chatId, userMessage: inputMessage }),
+  //     });
+  
+  //     if (!res.body) throw new Error("No response body");
+  
+  //     const reader = res.body.getReader();
+  //     const decoder = new TextDecoder();
+  
+  //     while (true) {
+  //       const { done, value } = await reader.read();
+  //       if (done) break;
+  
+  //       const text = decoder.decode(value);
+  
+  //       setMessages((prev) =>
+  //         prev.map((msg) =>
+  //           msg.id === assistantId
+  //             ? { ...msg, content: msg.content + text }
+  //             : msg
+  //         )
+  //       );
+  //     }
+  
+  //     setIsLoading(false);
+  //   } catch (error) {
+  //     console.error("Streaming failed", error);
+  //     setIsLoading(false);
+  //   }
+  // };
+
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!inputMessage.trim() || isLoading) return;
-  
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      content: inputMessage,
-      role: "user",
-      timestamp: new Date(),
-    };
-  
-    const assistantId = (Date.now() + 1).toString();
-    const assistantMessage: Message = {
-      id: assistantId,
-      content: "",
-      role: "assistant",
-      timestamp: new Date(),
-    };
-  
-    setMessages((prev) => [...prev, userMessage, assistantMessage]);
-    setInputMessage("");
-    setIsLoading(true);
-  
-    try {
-      const res = await fetch("/api/messages/send", {
-        method: "POST",
-        body: JSON.stringify({ chatId, userMessage: inputMessage }),
-      });
-  
-      if (!res.body) throw new Error("No response body");
-  
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-  
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-  
-        const text = decoder.decode(value);
-  
-        setMessages((prev) =>
-          prev.map((msg) =>
-            msg.id === assistantId
-              ? { ...msg, content: msg.content + text }
-              : msg
-          )
-        );
-      }
-  
-      setIsLoading(false);
-    } catch (error) {
-      console.error("Streaming failed", error);
-      setIsLoading(false);
-    }
+  e.preventDefault();
+  if (!inputMessage.trim() || isLoading) return;
+
+  const userMessage: Message = {
+    id: Date.now().toString(),
+    content: inputMessage,
+    role: "user",
+    timestamp: new Date(),
   };
+
+  const assistantId = (Date.now() + 1).toString();
+  const assistantMessage: Message = {
+    id: assistantId,
+    content: "",
+    role: "assistant",
+    timestamp: new Date(),
+  };
+
+  setMessages((prev) => [...prev, userMessage, assistantMessage]);
+  setInputMessage("");
+  setIsLoading(true);
+
+  // Start SSE connection
+  const source = new EventSource(`/api/messages/sendsse?chatId=${chatId}&q=${encodeURIComponent(inputMessage)}`);
+
+  source.addEventListener("status", (e) => {
+    const status = e.data;
+    console.log("Status:", status);
+    if (status === "generating") {
+      setLoadStateText("Generating...");
+    }
+  });
+
+  source.addEventListener("token", (e) => {
+    setLoadStateText("");
+    const token = JSON.parse(e.data);
+    setMessages((prev) =>
+      prev.map((msg) =>
+        msg.id === assistantId ? { ...msg, content: msg.content + token } : msg
+      )
+    );
+  });
+
+  source.addEventListener("tool_call", (e) => {
+    const { tool } = JSON.parse(e.data);
+    console.log("Tool call:", tool);
+    // Optionally update UI: “Calling Google Sheets…”
+    setLoadStateText(tool);
+  });
+
+  source.addEventListener("done", () => {
+    console.log("Stream done");
+    setIsLoading(false);
+    source.close();
+  });
+
+  source.addEventListener("error", (e) => {
+    console.error("SSE error", e);
+    setIsLoading(false);
+    source.close();
+  });
+};
+
   
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -260,7 +326,7 @@ const ChatPage: React.FC<ChatPageProps> = ({
                 <div className="mb-8">
                   <div className="flex items-start space-x-3">
                     <div className="flex-1">
-                      <div className="flex space-x-1">
+                      <div className="flex space-x-1 items-center">
                         <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
                         <div
                           className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
@@ -270,6 +336,7 @@ const ChatPage: React.FC<ChatPageProps> = ({
                           className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
                           style={{ animationDelay: "0.2s" }}
                         ></div>
+                        <div className="text-gray-600 mr-2">{loadStateText}</div>
                       </div>
                     </div>
                   </div>
