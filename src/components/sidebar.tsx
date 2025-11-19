@@ -18,6 +18,7 @@ import {
   Ellipsis,
   Pencil,
   Trash2,
+  Cable,
 } from "lucide-react";
 import Link from "next/link";
 import { signOut } from "@/lib/auth-client";
@@ -112,6 +113,21 @@ export function Sidebar() {
             <Search className="w-4 h-4 mr-2" />
             Search Chats
           </Button>
+
+          <Link href={'/integrations'}>
+          <Button
+            className={cn(
+              "w-full justify-start cursor-pointer",
+              pathname === '/integrations' ?
+                "bg-muted-foreground/20 text-foreground font-medium hover:bg-muted-foreground/20"
+                : "hover:bg-muted-foreground/20"
+            )}
+            variant={"ghost"}
+          >
+             <Cable className="w-4 h-4 mr-2" />
+            Integrations
+          </Button>
+           </Link>
         </div>
 
         {/* Middle: Chat history */}
