@@ -66,6 +66,7 @@ model User {
   sessions     Session[]
   accounts     Account[]
   chats        Chat[]
+  todoLists    TodoList[]
   userSettings UserSettings?
 
   @@map("users")
@@ -123,4 +124,44 @@ model Verification {
 enum Role {
   USER
   ASSISTANT
+}
+
+model TodoList {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title  String
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  tasks TodoTask[]
+
+  @@index([userId])
+  @@map("todo_lists")
+}
+
+model TodoTask {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title       String
+  description String? // optional
+  completed   Boolean @default(false)
+
+  dueDate  DateTime? // optional
+  priority TaskPriority @default(NORMAL)
+
+  todoListId String
+  todoList   TodoList @relation(fields: [todoListId], references: [id], onDelete: Cascade)
+
+  @@index([todoListId])
+  @@map("todo_tasks")
+}
+
+enum TaskPriority {
+  LOW
+  NORMAL
+  HIGH
 }

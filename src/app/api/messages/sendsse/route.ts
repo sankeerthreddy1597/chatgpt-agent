@@ -48,6 +48,7 @@ export async function GET(req: NextRequest) {
               systemInstruction: [
                 "You are a helpful assistant who can call tools when needed.",
                 "Return markdown responses when possible.",
+                "Use the tools available to you to perform actions for the user and send a proper response"
               ],
               tools: [{ functionDeclarations }],
             },
