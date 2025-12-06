@@ -1,6 +1,6 @@
 import React from 'react'
 import { BiLogoGmail } from "react-icons/bi";
-import { FaGoogleDrive } from "react-icons/fa";
+import { FaGoogleDrive, FaGithub } from "react-icons/fa";
 import { FaSlack } from "react-icons/fa6";
 
 import {
@@ -16,24 +16,31 @@ import { cn } from "@/lib/utils";
 const integrations = [
     {
         id: '1',
+        title: "Github",
+        description: 'Read PRs, raise pull requests',
+        icon: FaGithub,
+        connected: false,
+    },
+    {
+        id: '2',
         title: "Gmail",
         description: 'Read emails and create draft emails.',
         icon: BiLogoGmail,
         connected: false,
     },
     {
-        id: '2',
+        id: '3',
         title: "Google Drive",
         description: 'Read and write to google drive.',
         icon: FaGoogleDrive,
         connected: false,
     },
     {
-        id: '3',
+        id: '4',
         title: "Slack",
         description: 'Read and write messages from slack.',
         icon: FaSlack,
-        connected: true,
+        connected: false,
     }
 ]
 
